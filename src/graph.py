@@ -26,9 +26,9 @@ load_dotenv()
 llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0)
 llm_with_tools = llm.bind_tools(agent_tools)
 
-# Hard ceiling on progressive-loading steps per user turn. Without this the only
-# thing standing between a confused model and a runaway thread is LangGraph's
-# recursion limit, which surfaces as a crash rather than an answer.
+# saurav bhai ye hard limit hai ki ek user turn me kitne progressive-loading steps
+# ho sakte hai. iske bina sirf LangGraph ka recursion limit bachata hai aur wo
+# answer ki jagah crash de deta hai.
 MAX_TOOL_CALLS_PER_TURN = 8
 
 _SYSTEM_RULES = (
@@ -135,8 +135,8 @@ def tool_execution_node(state: AgentState):
     tool_responses: list[ToolMessage] = []
 
     has_index = bool(state.get("has_index", False))
-    # Seeded from committed state, then updated inside the loop, so a duplicate
-    # inside a single parallel tool-call batch is caught as well.
+    # saurav bhai ye committed state se shuru hota hai aur loop ke andar hi update
+    # hota rehta hai, isliye ek hi parallel batch ka duplicate bhi pakda jata hai.
     seen_summaries = set(state.get("fetched_summaries", []))
     seen_details = set(state.get("fetched_details", []))
 
@@ -145,7 +145,7 @@ def tool_execution_node(state: AgentState):
         tool_args = tool_call.get("args") or {}
 
         try:
-            # ---- Layer 1: the index -------------------------------------
+            # ---- Layer 1: index saurav bhai -----------------------------
             if tool_name == "get_available_topics":
                 if has_index:
                     result = (
@@ -168,7 +168,7 @@ def tool_execution_node(state: AgentState):
                     )
                     result = _receipt("the topic index", payload)
 
-            # ---- Layer 2: topic summaries -------------------------------
+            # ---- Layer 2: topic summaries saurav bhai -------------------
             elif tool_name == "get_topic_summary":
                 topic, err = resolve_topic(tool_args.get("topic_name", ""))
                 if err:
@@ -214,7 +214,7 @@ def tool_execution_node(state: AgentState):
                     )
                     result = _receipt(f"the summary for '{topic}'", payload)
 
-            # ---- Layer 3: deep section details ---------------------------
+            # ---- Layer 3: deep section details saurav bhai ---------------
             elif tool_name == "get_section_details":
                 topic, err = resolve_topic(tool_args.get("topic_name", ""))
                 section, sec_err = (
@@ -279,10 +279,10 @@ def tool_execution_node(state: AgentState):
                     {"action": "Tool Rejected", "details": f"Unknown tool: {tool_name}", "tokens": 0}
                 )
 
-        except Exception as exc:  # noqa: BLE001 - a bad argument must not kill the run
-            # Pydantic raises on missing/extra kwargs when the model hallucinates a
-            # signature. Surfacing it as a tool result lets the agent self-correct
-            # instead of taking the whole graph down.
+        except Exception as exc:  # noqa: BLE001 - galat argument se pura run nahi marna chahiye saurav bhai
+            # saurav bhai jab model galat signature bana deta hai to pydantic error
+            # deta hai. usko tool result bana ke wapas bhej rhe hai taki agent khud
+            # sudhar le, pura graph girane ki jagah.
             result = (
                 f"Error: tool '{tool_name}' failed to execute "
                 f"({type(exc).__name__}: {exc}). Correct the arguments or answer "
@@ -304,8 +304,8 @@ def tool_execution_node(state: AgentState):
             )
         )
 
-    # We return dictionaries mapping to our State definition.
-    # Because we used `operator.add` in state.py, these lists will append to the global state.
+    # saurav bhai yaha apni State definition ke hisab se dictionaries return kr rhe hai.
+    # state.py me `operator.add` lagaya hai isliye ye lists global state me append ho jayengi.
     return {
         "messages": tool_responses,
         "active_context": new_context,
@@ -371,7 +371,7 @@ def route_after_chatbot(state: AgentState) -> str:
 
 
 # ---------------------------------------------------------
-# Compile the LangGraph
+# saurav bhai yaha LangGraph ko compile kr rhe hai
 # ---------------------------------------------------------
 graph_builder = StateGraph(AgentState)
 

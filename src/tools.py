@@ -6,18 +6,18 @@ import sys
 
 from langchain_core.tools import tool
 
-# Add the parent directory to sys.path so we can import mock_data
-# when running from different entry points.
+# saurav bhai parent directory ko sys.path me daal rhe hai taki mock_data
+# alag alag entry point se bhi import ho jaye.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from mock_data import mock_database
 
 _CONTENT: dict = mock_database.get("content", {})
 
-# The index must only advertise topics that can actually be fetched. mock_data
-# lists `computer_vision` in topics_index with no matching content entry, so an
-# agent that follows the ladder correctly would pick it, get "not found", go
-# back to the index, see it again, and loop. Serving the intersection makes
-# that unreachable.
+# saurav bhai index me sirf wahi topics dikhne chahiye jo sach me fetch ho sake.
+# mock_data me `computer_vision` topics_index me pada hai par uska content hai hi
+# nahi, to jo agent sahi ladder follow krega wo usi ko pick krega, "not found"
+# milega, wapas index pe jayega, phir wahi dikhega aur loop lag jayega. isliye
+# dono ka intersection hi serve kr rhe hai.
 _SERVED_TOPICS: list[str] = [t for t in mock_database.get("topics_index", []) if t in _CONTENT]
 
 _UNBACKED_TOPICS: list[str] = [
@@ -129,5 +129,5 @@ def get_section_details(topic_name: str, section_name: str) -> str:
     return f"Detailed Content for {topic} -> {section}:\n{body}"
 
 
-# We group them into a list so we can easily bind them to the LLM in graph.py
+# saurav bhai in sabko ek list me rakh rhe hai taki graph.py me LLM se aasani se bind ho jaye
 agent_tools = [get_available_topics, get_topic_summary, get_section_details]
