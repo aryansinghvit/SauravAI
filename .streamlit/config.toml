@@ -1,0 +1,9 @@
+# Native dark theme so Streamlit's own widgets (chat input, text input,
+# spinner, tooltips) match the locked dark layout in app.py instead of
+# rendering on the default light base.
+[theme]
+base = "dark"
+primaryColor = "#00e599"
+backgroundColor = "#0b0e14"
+secondaryBackgroundColor = "#10151f"
+textColor = "#e6edf3"
